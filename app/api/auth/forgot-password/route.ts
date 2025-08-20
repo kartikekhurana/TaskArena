@@ -36,7 +36,7 @@ export async function POST(req: Request) {
       { expiresIn: "1h" }
     );
 
-    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/reset-password/${token}`;
+    const resetUrl = `${process.env.NEXT_PUBLIC_API_URL}/reset-password/${token}`;
 
     const html = `
     <p>Hello ${user.username}</p>
