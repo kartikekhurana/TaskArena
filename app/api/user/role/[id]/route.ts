@@ -6,14 +6,14 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectToDB();
     const currentUser = await isLoggedIn();
     await isAdmin(currentUser);
 
-    const { id: targetUserId } = params;
+    const { id: targetUserId } = await context.params; 
     const { role } = await req.json();
 
     if (!["user", "admin"].includes(role)) {

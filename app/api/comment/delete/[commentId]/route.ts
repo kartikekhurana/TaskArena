@@ -6,7 +6,7 @@ import { isLoggedIn } from "@/lib/middlewares/auth";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { commentId: string } }
+  context: { params: Promise<{ commentId: string }> }
 ) {
   try {
     await connectToDB();
@@ -15,7 +15,7 @@ export async function DELETE(
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-    const { commentId } = params;
+    const { commentId } = await context.params; // Added await here
     const comment = await Comment.findById(commentId);
 
     if (!comment) {
@@ -39,6 +39,6 @@ export async function DELETE(
     console.error("error while deleting the comment : ", error.message);
     return NextResponse.json({
       error: error.message || "something went wrong while deleting the comment",
-    });
+    }, { status: 500 }); 
   }
 }

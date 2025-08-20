@@ -5,12 +5,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { commentId: string } }
+  context: { params: Promise<{ commentId: string }> }
 ) {
   try {
     await connectToDB();
     const { id: userId } = await isLoggedIn();
-    const { commentId } = params;
+    const { commentId } = await context.params; // Added await here
 
     const comment = await Comment.findById(commentId);
     if (!comment) {
@@ -46,7 +46,7 @@ export async function PATCH(
     comment.content = content;
     await comment.save();
     return NextResponse.json(
-      { error: "Comment updated successfully", comment },
+      { message: "Comment updated successfully", comment }, 
       { status: 200 }
     );
   } catch (error: any) {

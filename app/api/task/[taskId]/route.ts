@@ -24,7 +24,7 @@ async function fetchTaskAsUser(taskId: string, userId: string) {
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { taskId: string } }
+  context: { params: Promise<{ taskId: string }> }
 ) {
   try {
     await connectToDB();
@@ -33,7 +33,7 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-    const { taskId } = await params;
+    const { taskId } = await context.params; // Fixed: use context.params and await it
     let task;
     if (user.role === "admin") {
       task = await fetchTaskAsAdmin(taskId);
@@ -63,7 +63,7 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { taskId: string } }
+  context: { params: Promise<{ taskId: string }> }
 ) {
   try {
     await connectToDB();
@@ -72,7 +72,7 @@ export async function PATCH(
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-    const { taskId } = await params;
+    const { taskId } = await context.params; // Fixed: use context.params and await it
     const task = await Task.findById(taskId);
     if (!task) {
       return NextResponse.json({ error: "Task not found" }, { status: 404 });
@@ -137,9 +137,10 @@ export async function PATCH(
     );
   }
 }
+
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { taskId: string } }
+  context: { params: Promise<{ taskId: string }> }
 ) {
   try {
     await connectToDB();
@@ -148,7 +149,7 @@ export async function DELETE(
     if (!user) {
       return NextResponse.json({ error: "user not found" }, { status: 404 });
     }
-    const { taskId } = await params;
+    const { taskId } = await context.params; // Fixed: use context.params and await it
     const task = await Task.findById(taskId);
     if (!task) {
       return NextResponse.json({ error: "Task not found" }, { status: 404 });

@@ -7,12 +7,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { taskId: string } }
+  segmentData: any
 ) {
   try {
     await connectToDB();
     const { id: userId } = await isLoggedIn();
-    const { taskId } = params;
+    const taskId = segmentData.params.taskId; // Direct access
 
     const user = await User.findById(userId);
     if (user.role !== "admin") {
@@ -24,19 +24,18 @@ export async function GET(
         );
       }
     }
+    
     if (!taskId) {
       return NextResponse.json(
-        {
-          error: "Task Id is required",
-        },
-        {
-          status: 404,
-        }
+        { error: "Task Id is required" },
+        { status: 404 }
       );
     }
+    
     const comments = await Comment.find({ taskId })
       .sort({ createdAt: -1 })
       .populate("userId", "username avatar");
+      
     return NextResponse.json(
       { message: "Comments fetched successfully", comments },
       { status: 200 }
@@ -45,12 +44,9 @@ export async function GET(
     console.error("error while fetching comments : ", error.message);
     return NextResponse.json(
       {
-        error:
-          error.message || "something went wrong while fetching the comments",
+        error: error.message || "something went wrong while fetching the comments",
       },
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
   }
 }
