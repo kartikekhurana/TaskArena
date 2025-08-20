@@ -9,7 +9,6 @@ import {
   generateRefreshToken,
 } from "@/lib/generateTokens";
 import { cookies } from "next/headers";
-import { upload } from "@/lib/multer";
 import fs from 'fs/promises';
 
 
